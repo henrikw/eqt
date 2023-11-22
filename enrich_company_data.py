@@ -46,12 +46,8 @@ def fetch_company_json(url):
 
 def enrich_companies_from_url(companies_dict, timestamp, fetcher=fetch_company_json):
     # Using a fetcher function to make it easier to mock it in unit tests.
-    counter = 0
     details_key = 'details_from_url'
     for company in sorted(companies_dict.keys()):
-        counter += 1
-        if counter > 5:
-            break
         companies_dict[company]['url_fetched_at'] = timestamp
         print_message(f'Getting url data for {company}')
         if companies_dict[company].get('path'):
@@ -97,21 +93,13 @@ def enrich_companies_from_file(file_name, companies_dict, file_type, match_key):
                 print_message(msg + f' ({file_name} ({file_type}), line number: {line_counter})')
             if updated:
                 counter += 1
-                if counter > 500:
-                    break
     print_message(f'Updated {counter} companies from {file_name}')
 
 
 def output_result(companies_dict):
     print_message(f'Number of companies: {len(companies_dict)}')
-    counter = 0
     for company in sorted(companies_dict.keys()):
-        counter += 1
-        if counter > 50:
-            break
-        print(f'{company}:')
         print(json.dumps(companies_dict[company]))
-        print()
 
 
 def print_message(message):
@@ -132,7 +120,8 @@ def print_usage():
 
 
 def main(org_filename, funding_filename):
-    companies_dict = dict()
+    companies_dict = dict()  # Key: company name, value: company data (added in different steps below).
+
     fetch_companies_json(CURRENT_PORTFOLIO, companies_dict)
     fetch_companies_json(DIVESTMENTS, companies_dict)
 

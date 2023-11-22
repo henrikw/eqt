@@ -10,9 +10,10 @@ then looping through the org data file to find matches, and finally looping thro
 the funding data file to find matches. 
 
 If extra data exists in any of these places, it is added under the keys `details_from_url`,
-`details_from_org_file` and `details_from_funding_file` respectively.
+`details_from_org_file` and `details_from_funding_file` respectively. Note, only the first
+match is used, subsequent matches are ignored.
 
-Finally, it prints the enriched company data to stdout (sorted in alphabetical order of the
+Finally, it prints the enriched company data as JSON to stdout (sorted in alphabetical order of the
 company names).
 
 Logging is enabled by default, so you see that the program is making progress (it takes
@@ -20,7 +21,7 @@ a bit over a minute to run).
 
 ## Setting up and running the program:
 
-Check out the code from github:
+Check out the code from GitHub:
 
 ```
 git clone git@github.com:henrikw/eqt.git
@@ -70,3 +71,8 @@ Can add tests that read a small file (both or org and funding types) and checks 
 Can add a command line flag that enables/disables logging printouts.
 
 Better error handling when reading files - e.g. if content not JSON.
+
+Can add more tests for the logic in the fetch-functions. However, these tests will
+never be able to detect if the format of the data changes on the EQT website. Therefore, it
+is also important to have logging that can detect unexpected results when
+fetching data from the website.

@@ -57,8 +57,8 @@ def enrich_companies_from_url(companies_dict, timestamp):
             company_url = BASE_URL + companies_dict[company].get('path') + TAIL_URL
             company_details = fetch_company_json(company_url)
             if not company_details:
-                msg = f'No details for company {company}'
-                print_error(msg)
+                msg = f'No details from for company {company} with url {company_url}'
+                print_message(msg)
                 companies_dict[company][details_key] = msg
                 continue
             details_from_url = dict()
@@ -69,7 +69,7 @@ def enrich_companies_from_url(companies_dict, timestamp):
             companies_dict[company][details_key] = details_from_url
         else:
             msg = f'No url for company {company}'
-            print_error(msg)
+            print_message(msg)
             companies_dict[company][details_key] = msg
 
 

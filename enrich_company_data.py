@@ -74,14 +74,14 @@ def enrich_companies_from_url(companies_dict, timestamp, fetcher=fetch_company_j
             companies_dict[company][details_key] = msg
 
 
-def enrich_companies_from_dict(companies_dict, data, file_type, match_key):
-    company_name = data[match_key]
+def enrich_companies_from_dict(companies_dict, data_dict, file_type, match_key):
+    company_name = data_dict[match_key]
     if company_name not in companies_dict:
         return False, None
     details_key = 'details_from_' + file_type
     if companies_dict[company_name].get(details_key):
         return False, f'Duplicate company name: {company_name}, not overwriting'
-    companies_dict[company_name][details_key] = data
+    companies_dict[company_name][details_key] = data_dict
     return True, None
 
 

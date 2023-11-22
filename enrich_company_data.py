@@ -44,18 +44,19 @@ def fetch_company_json(url):
         print_error(f"Error fetching data: {e}")
 
 
-def enrich_companies_from_url(companies_dict, timestamp):
+def enrich_companies_from_url(companies_dict, timestamp, fetcher=fetch_company_json):
+    # Using a fetcher function to make it easier to mock it in unit tests.
     counter = 0
     details_key = 'details_from_url'
     for company in sorted(companies_dict.keys()):
         counter += 1
         if counter > 5:
             break
-        companies_dict[company]['fetched_at'] = timestamp
+        companies_dict[company]['url_fetched_at'] = timestamp
         print_message(f'Getting url data for {company}')
         if companies_dict[company].get('path'):
             company_url = BASE_URL + companies_dict[company].get('path') + TAIL_URL
-            company_details = fetch_company_json(company_url)
+            company_details = fetcher(company_url)
             if not company_details:
                 msg = f'No details from for company {company} with url {company_url}'
                 print_message(msg)

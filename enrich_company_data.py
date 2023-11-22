@@ -11,6 +11,8 @@ TAIL_URL = "page-data.json"
 CURRENT_PORTFOLIO = BASE_URL + "/current-portfolio/" + TAIL_URL
 DIVESTMENTS = BASE_URL + "/current-portfolio/divestments/" + TAIL_URL
 
+logging_enabled = True
+
 
 def fetch_companies_json(url, companies_dict):
     try:
@@ -22,7 +24,7 @@ def fetch_companies_json(url, companies_dict):
 
         for node in company_nodes:
             if node['title'] in companies_dict:
-                print_error(f"Duplicate company name: {node['title']}, not overwriting (from {url})")
+                print_message(f"Duplicate company name: {node['title']}, not overwriting (from {url})")
             else:
                 companies_dict[node['title']] = node
 
@@ -102,13 +104,14 @@ def output_result(companies_dict):
         print(json.dumps(companies_dict[company]))
 
 
-def print_message(message):
-    print(f'### {message}')
-
-
 def now_as_string():
     now = datetime.now()
     return now.strftime("%Y-%m-%d %H:%M.%S")
+
+
+def print_message(message):
+    if logging_enabled:
+        print(f'### {message}')
 
 
 def print_error(message):

@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -u
 
 import json
+import os
 import requests
 import sys
 from datetime import datetime
@@ -144,6 +145,10 @@ if __name__ == '__main__':
 
     org_file = sys.argv[1]
     funding_file = sys.argv[2]
+    for file in (org_file, funding_file):
+        if not os.path.exists(file):
+            print_error(f'File {file} does not exist')
+            exit(1)
     print_message(f'Started at: {now_as_string()}')
     print_message(f'Using org file: {org_file}, funding file: {funding_file}')
     main(org_file, funding_file)

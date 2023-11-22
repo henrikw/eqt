@@ -5,22 +5,11 @@ import requests
 import sys
 from datetime import datetime
 
-# Give input files as arguments
-# TODO: need to pip install requests
-# TODO: Add file to GitHub
-# TODO: sort the output alphabetically
-# TODO: How add good tests?
-# curl https://eqtgroup.com/page-data/current-portfolio/funds/page-data.json
-# https://eqtgroup.com/current-portfolio/funds/
-# https://eqtgroup.com/current-portfolio/funds/eqt-vii/
-# curl https://eqtgroup.com/page-data/current-portfolio/funds/eqt-vii/page-data.json
-
 BASE_URL = "https://eqtgroup.com/page-data"
 TAIL_URL = "page-data.json"
 
-COMPANY_URL = "https://eqtgroup.com/page-data/current-portfolio/aig-hospitals/page-data.json"
-CURRENT_PORTFOLIO = "https://eqtgroup.com/page-data/current-portfolio/page-data.json"
-DIVESTMENTS = "https://eqtgroup.com/page-data/current-portfolio/divestments/page-data.json"
+CURRENT_PORTFOLIO = BASE_URL + "/current-portfolio/" + TAIL_URL
+DIVESTMENTS = BASE_URL + "/current-portfolio/divestments/" + TAIL_URL
 
 
 def fetch_companies_json(url, companies_dict):

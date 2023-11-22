@@ -44,33 +44,33 @@ def fetch_company_json(url):
         print_error(f"Error fetching data: {e}")
 
 
-def add_details_from_path(companies_dict, timestamp):
+def enrich_companies_from_url(companies_dict, timestamp):
     counter = 0
-
-    for company_name in sorted(companies_dict.keys()):
+    details_key = 'details_from_url'
+    for company in sorted(companies_dict.keys()):
         counter += 1
         if counter > 5:
             break
-        companies_dict[company_name]['fetched_at'] = timestamp
-        print_message(f'Getting path data for {company_name}')
-        if companies_dict[company_name].get('path'):
-            company_url = BASE_URL + companies_dict[company_name].get('path') + TAIL_URL
+        companies_dict[company]['fetched_at'] = timestamp
+        print_message(f'Getting url data for {company}')
+        if companies_dict[company].get('path'):
+            company_url = BASE_URL + companies_dict[company].get('path') + TAIL_URL
             company_details = fetch_company_json(company_url)
             if not company_details:
-                msg = f'No details for company {company_name}'
+                msg = f'No details for company {company}'
                 print_error(msg)
-                companies_dict[company_name]['details_from_path'] = msg
+                companies_dict[company][details_key] = msg
                 continue
-            details_from_path = dict()
+            details_from_url = dict()
             keys_to_extract = ['board', 'heading', 'management', 'preamble', 'website']
             for detail in company_details.keys():
                 if detail in keys_to_extract:
-                    details_from_path[detail] = company_details[detail]
-            companies_dict[company_name]['details_from_path'] = details_from_path
+                    details_from_url[detail] = company_details[detail]
+            companies_dict[company][details_key] = details_from_url
         else:
-            msg = f'No path for company {company_name}'
+            msg = f'No url for company {company}'
             print_error(msg)
-            companies_dict[company_name]['details_from_path'] = msg
+            companies_dict[company][details_key] = msg
 
 
 def enrich_companies_from_dict(companies_dict, data, file_type, match_key):
@@ -135,7 +135,7 @@ def main(org_filename, funding_filename):
     fetch_companies_json(CURRENT_PORTFOLIO, companies_dict)
     fetch_companies_json(DIVESTMENTS, companies_dict)
 
-    add_details_from_path(companies_dict, now_as_string())
+    enrich_companies_from_url(companies_dict, now_as_string())
 
     enrich_companies_from_file(org_filename, companies_dict, 'org_file', 'name')
     enrich_companies_from_file(funding_filename, companies_dict, 'funding_file', 'org_name')

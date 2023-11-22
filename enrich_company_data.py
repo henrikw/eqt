@@ -73,34 +73,32 @@ def add_details_from_path(companies_dict, timestamp):
             companies_dict[company_name]['details_from_path'] = msg
 
 
-def enrich_companies_from_dict(companies_dict, data, file_name, file_type, line_counter):
-    company_name = data['name']
+def enrich_companies_from_dict(companies_dict, data, file_type, match_key):
+    company_name = data[match_key]
     if company_name not in companies_dict:
-        return False
-    if companies_dict[company_name].get('details_from_' + file_type):
-        print_message(f'Duplicate company name: {company_name}, in {file_type}, not overwriting ({file_name}, line number: {line_counter})')
-        return False
-    companies_dict[company_name]['details_from_org_file'] = data
-    return True
+        return False, None
+    details_key = 'details_from_' + file_type
+    if companies_dict[company_name].get(details_key):
+        return False, f'Duplicate company name: {company_name}, not overwriting'
+    companies_dict[company_name][details_key] = data
+    return True, None
 
 
-def enrich_companies_from_org_file(org_filename, companies_dict):
+def enrich_companies_from_file(file_name, companies_dict, file_type, match_key):
     counter = 0
     line_counter = 0
-    print("### Here is the first 3 lines of the org file")
-    with open(org_filename, 'r') as file:
+    with open(file_name, 'r') as file:
         for line in file:
             line_counter += 1
             data = json.loads(line)
-            updated = enrich_companies_from_dict(companies_dict, data, org_filename, 'org_file', line_counter)
+            updated, msg = enrich_companies_from_dict(companies_dict, data, file_type, match_key)
+            if msg:
+                print_message(msg + f' ({file_name} ({file_type}), line number: {line_counter})')
             if updated:
                 counter += 1
                 if counter > 500:
                     break
-
-
-def enrich_companies_from_funding_file(funding_filename, companies_dict):
-    pass  # TODO implement
+    print_message(f'Updated {counter} companies from {file_name}')
 
 
 def output_result(companies_dict):
@@ -108,14 +106,15 @@ def output_result(companies_dict):
     counter = 0
     for company in sorted(companies_dict.keys()):
         counter += 1
-        if counter > 20:
+        if counter > 50:
             break
+        print(f'{company}:')
         print(json.dumps(companies_dict[company]))
         print()
 
 
 def print_message(message):
-    print(f'###: {message}')
+    print(f'### {message}')
 
 
 def now_as_string():
@@ -138,8 +137,8 @@ def main(org_filename, funding_filename):
 
     add_details_from_path(companies_dict, now_as_string())
 
-    enrich_companies_from_org_file(org_filename, companies_dict)
-    enrich_companies_from_funding_file(funding_filename, companies_dict)
+    enrich_companies_from_file(org_filename, companies_dict, 'org_file', 'name')
+    enrich_companies_from_file(funding_filename, companies_dict, 'funding_file', 'org_name')
 
     output_result(companies_dict)
 

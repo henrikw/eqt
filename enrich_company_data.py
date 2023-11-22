@@ -55,22 +55,22 @@ def fetch_company_json(url):
         print(f"Error fetching data: {e}")
 
 
-def add_details_from_path(companies_dict):
+def add_details_from_path(companies_dict, timestamp):
     counter = 0
-    now = datetime.now()
-    formatted_timestamp = now.strftime("%Y-%m-%d %H:%M.%S")
 
     for company_name in companies_dict.keys():
         counter += 1
         if counter > 5:
             break
-        companies_dict[company_name]['fetched_at'] = formatted_timestamp
+        companies_dict[company_name]['fetched_at'] = timestamp
         print(company_name)
         if companies_dict[company_name].get('path'):
             company_url = BASE_URL + companies_dict[company_name].get('path') + TAIL_URL
             company_details = fetch_company_json(company_url)
             if not company_details:
-                print_error(f'No details for company {company_name}')
+                msg = f'No details for company {company_name}'
+                print_error(msg)
+                companies_dict[company_name]['details_from_path'] = msg
                 continue
             details_from_path = dict()
             keys_to_extract = ['board', 'heading', 'management', 'preamble', 'website']
@@ -79,9 +79,9 @@ def add_details_from_path(companies_dict):
                     details_from_path[detail] = company_details[detail]
             companies_dict[company_name]['details_from_path'] = details_from_path
         else:
-            print_error('No path')
-
-        # print(companies_dict[company_name])
+            msg = f'No path for company {company_name}'
+            print_error(msg)
+            companies_dict[company_name]['details_from_path'] = msg
 
 
 def print_error(message):
@@ -92,7 +92,11 @@ def main():
     companies_dict = dict()
     fetch_companies_json(CURRENT_PORTFOLIO, companies_dict)
     fetch_companies_json(DIVESTMENTS, companies_dict)
-    add_details_from_path(companies_dict)
+
+    now = datetime.now()
+    timestamp = now.strftime("%Y-%m-%d %H:%M.%S")
+    add_details_from_path(companies_dict, timestamp)
+
     print(f'Number of companies: {len(companies_dict)}')
 
 

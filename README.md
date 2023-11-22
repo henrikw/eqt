@@ -72,6 +72,9 @@ Can add a command line flag that enables/disables logging printouts.
 
 Better error handling when reading files - e.g. if content not JSON.
 
+Better error handling when fetching from the EQT website fails (for example, return
+what has already been fetched, as well as logging the error)
+
 Can add more tests for the logic in the fetch-functions. However, these tests will
 never be able to detect if the format of the data changes on the EQT website. Therefore, it
 is also important to have logging that can detect unexpected results when
